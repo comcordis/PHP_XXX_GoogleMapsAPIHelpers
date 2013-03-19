@@ -44,6 +44,14 @@ $test = XXX_GoogleMapsAPIHelpers::getTimezoneInformationForLocation(50.8842594, 
 print_r($test);
 */
 
+/*
+
+- normalTimezoneOffset (Altijd opvraagbaar op basis van locatie en fake timestamp)
+
+- daylightSavingTimeTimezoneOffset ()
+
+
+*/
 
 // Meuserstraat 219, Kerkrade, Nederland: 50.8842594, 6.0751393
 // UTC+1 with DST in Summer
@@ -58,11 +66,13 @@ print_r($test);
 	$a = 1364691599;
 		// UTC: Sun, 31 Mar 2013 00:59:59
 		// UTC+1: Sun, 31 Mar 2013 01:59:59
+		// Google response: UTC+3600
 	
 	// First second with DST 
 	$b = 1364691600;
 		// UTC: Sun, 31 Mar 2013 01:00:00
 		// UTC+1 + 1h DST (UTC+2): Sun, 31 Mar, 2013 03:00:00
+		// Google response: UTC+7200
 
 	// Sun, 27 Oct 2013, 03:00:00 clocks are turned backward 1 hour to
 	// Sun, 27 Oct 2013, 02:00:00 local standard time instead
@@ -72,11 +82,13 @@ print_r($test);
 	$c = 1382835599;
 		// UTC: Sun, 27 Oct 2013 00:59:59
 		// UTC+1 + 1h DST (UTC+2): Sun, 27 Oct, 2013 02:59:59
+		// Google response: UTC+7200
 		
 	// First second without DST
 	$d = 1382835600;
 		// UTC: Sun, 27 Oct 2013 01:00:00
 		// UTC+1: Sun, 27 Oct, 2013 02:00:00
+		// Google response: UTC+3600
 
 /*
 
