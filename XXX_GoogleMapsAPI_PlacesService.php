@@ -80,7 +80,10 @@ class XXX_GoogleMapsAPI_PlacesService
 			$result['latitude'] = $placeResult['geometry']['location']['lat'];
 			$result['longitude'] = $placeResult['geometry']['location']['lng'];
 			$result['name'] = $placeResult['name'];
+			$result['places_ID'] = $placeResult['id'];
+			$result['places_reference'] = $placeResult['reference'];
 			$result['types'] = $placeResult['types'];
+			$result['attributions'] = $placeResult['attributions'];
 		}
 		
 		return $result;

@@ -30,7 +30,6 @@ class XXX_GoogleMapsAPI_TimezoneService
 			$localByNormalUTC = $normalUTC + $tempResult1['timezoneOffset'];
 			$localByDaylightSavingTimeUTC = $daylightSavingTimeUTC + $tempResult2['timezoneOffset'];
 			
-				
 			if ($localTimestamp == $localByNormalUTC && $localTimestamp == $localByDaylightSavingTimeUTC)
 			{
 				$result['isWithinRepeatedHour'] = true;

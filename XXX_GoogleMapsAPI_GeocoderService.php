@@ -134,7 +134,7 @@ class XXX_GoogleMapsAPI_GeocoderService
 					
 					if ($type == 'street_number')
 					{
-						$result['houseNumber'] = $addressComponent['long_name'];
+						$result['streetNumber'] = $addressComponent['long_name'];
 					}
 					else if ($type == 'route')
 					{
