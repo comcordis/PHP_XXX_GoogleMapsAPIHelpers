@@ -73,7 +73,10 @@ class XXX_GoogleMapsAPI_DistanceMatrixService
 		}
 		
 		$response = XXX_GoogleMapsAPIHelpers::doGETRequest($uri);
-				
+		
+		XXX_Type::peakAtVariable(array($fromLatitude, $fromLongitude, $toLatitude, $toLongitude));
+		XXX_Type::peakAtVariable($response);
+		
 		if ($response != false && $response['status'] == 'OK')
 		{
 			$extraInformation = array
