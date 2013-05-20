@@ -2,7 +2,7 @@
 
 class XXX_GoogleMapsAPI_PlacesService
 {
-	public static $key = 'AIzaSyCaQ078Q5XL7lOAl1COt1a7TT_zsMkMhWU';
+	public static $key = '';
 	
 	public static function lookupPlace ($rawPlaceString = '', $languageCode = 'en', $locationBias = '')
 	{

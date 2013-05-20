@@ -15,7 +15,7 @@ class XXX_GoogleMapsAPI_GeocoderService
 		$uri .= '&sensor=false';
 		if (self::$key != '')
 		{
-			$uri .= '&key=' . self::$key;
+			//$uri .= '&key=' . self::$key;
 		}
 		if ($languageCode != '')
 		{
@@ -55,7 +55,7 @@ class XXX_GoogleMapsAPI_GeocoderService
 		$uri .= '&sensor=false';
 		if (self::$key != '')
 		{
-			$uri .= '&key=' . self::$key;
+			//$uri .= '&key=' . self::$key;
 		}
 		if ($languageCode != '')
 		{
