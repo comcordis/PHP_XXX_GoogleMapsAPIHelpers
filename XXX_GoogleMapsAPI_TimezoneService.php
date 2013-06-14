@@ -166,7 +166,7 @@ class XXX_GoogleMapsAPI_TimezoneService
 		$uri .= '&sensor=false';
 		if (self::$key != '')
 		{
-			$uri .= '&key=' . self::$key;
+			//$uri .= '&key=' . self::$key;
 		}
 		if ($languageCode != '')
 		{
@@ -174,6 +174,8 @@ class XXX_GoogleMapsAPI_TimezoneService
 		}
 		
 		$response = XXX_GoogleMapsAPIHelpers::doGETRequest($uri);
+				
+		XXX_Type::peakAtVariable($response);		
 				
 		if ($response != false && $response['status'] == 'OK')
 		{
