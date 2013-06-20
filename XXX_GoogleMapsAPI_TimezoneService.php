@@ -175,7 +175,7 @@ class XXX_GoogleMapsAPI_TimezoneService
 		
 		$response = XXX_GoogleMapsAPIHelpers::doGETRequest($uri);
 				
-		XXX_Type::peakAtVariable($response);		
+		//XXX_Type::peakAtVariable($response);		
 				
 		if ($response != false && $response['status'] == 'OK')
 		{
