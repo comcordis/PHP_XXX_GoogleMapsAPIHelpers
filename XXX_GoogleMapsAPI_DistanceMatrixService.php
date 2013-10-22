@@ -2,32 +2,41 @@
 
 class XXX_GoogleMapsAPI_DistanceMatrixService
 {
-	public static $key = '';
-	
 	public static function getRideInformationForAddressStrings ($fromRawAddressString = '', $toRawAddressString = '', $languageCode = 'en', $locationBias = '')
 	{
 		$result = false;
 		
 		// http://maps.googleapis.com/maps/api/distancematrix/json?origins=Vancouver+BC|Seattle&destinations=San+Francisco|Victoria+BC&mode=bicycling&language=fr-FR&sensor=false
-		$uri = 'http://maps.googleapis.com/maps/api/distancematrix/json';
-		$uri .= '?';
-		$uri .= 'origins=' . urlencode($fromRawAddressString);
-		$uri .= '&destinations=' . urlencode($to);
-		$uri .= '&units=metric';
-		$uri .= '&mode=driving';
-		$uri .= '&sensor=false';
-		if (self::$key != '')
+		
+		$protocol = 'http://';
+		
+		if (XXX_GoogleMapsAPIHelpers::$encryptedConnection)
 		{
-			//$uri .= '&key=' . self::$key;
+			$protocol = 'https://';
 		}
+		
+		$domain = 'maps.googleapis.com';
+		
+		$path = '/maps/api/distancematrix/json';
+		$path .= '?';
+		$path .= 'origins=' . urlencode($fromRawAddressString);
+		$path .= '&destinations=' . urlencode($to);
+		$path .= '&units=metric';
+		$path .= '&mode=driving';
+		$path .= '&sensor=false';
+		
 		if ($languageCode != '')
 		{
-			$uri .= '&language=' . $languageCode;
+			$path .= '&language=' . $languageCode;
 		}
 		if ($locationBias != '')
 		{
-			$uri .= '&region=' . $locationBias;
+			$path .= '&region=' . $locationBias;
 		}
+		
+		$path = XXX_GoogleMapsAPIHelpers::addAuthenticationToPath($path);
+				
+		$uri = $protocol . $domain . $path;
 		
 		$response = XXX_GoogleMapsAPIHelpers::doGETRequest($uri);
 		
@@ -52,30 +61,38 @@ class XXX_GoogleMapsAPI_DistanceMatrixService
 		$result = false;
 		
 		// http://maps.googleapis.com/maps/api/distancematrix/json?origins=41.43206,-81.38992&destinations=41.43206,-81.38992&mode=bicycling&language=fr-FR&sensor=false
-		$uri = 'http://maps.googleapis.com/maps/api/distancematrix/json';
-		$uri .= '?';
-		$uri .= 'origins=' . urlencode($fromLatitude . ',' . $fromLongitude);
-		$uri .= '&destinations=' . urlencode($toLatitude . ',' . $toLongitude);
-		$uri .= '&units=metric';
-		$uri .= '&mode=driving';
-		$uri .= '&sensor=false';
-		if (self::$key != '')
+		
+		$protocol = 'http://';
+		
+		if (XXX_GoogleMapsAPIHelpers::$encryptedConnection)
 		{
-			//$uri .= '&key=' . self::$key;
+			$protocol = 'https://';
 		}
+				
+		$domain = 'maps.googleapis.com';
+		
+		$path = '/maps/api/distancematrix/json';
+		$path .= '?';
+		$path .= 'origins=' . urlencode($fromLatitude . ',' . $fromLongitude);
+		$path .= '&destinations=' . urlencode($toLatitude . ',' . $toLongitude);
+		$path .= '&units=metric';
+		$path .= '&mode=driving';
+		$path .= '&sensor=false';
+		
 		if ($languageCode != '')
 		{
-			$uri .= '&language=' . $languageCode;
+			$path .= '&language=' . $languageCode;
 		}
 		if ($locationBias != '')
 		{
-			$uri .= '&region=' . $locationBias;
+			$path .= '&region=' . $locationBias;
 		}
 		
+		$path = XXX_GoogleMapsAPIHelpers::addAuthenticationToPath($path);
+				
+		$uri = $protocol . $domain . $path;
+				
 		$response = XXX_GoogleMapsAPIHelpers::doGETRequest($uri);
-		
-		//XXX_Type::peakAtVariable(array($fromLatitude, $fromLongitude, $toLatitude, $toLongitude));
-		//XXX_Type::peakAtVariable($response);
 		
 		if ($response != false && $response['status'] == 'OK')
 		{

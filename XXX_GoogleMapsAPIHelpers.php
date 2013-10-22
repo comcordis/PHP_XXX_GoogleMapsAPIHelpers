@@ -1,7 +1,16 @@
 <?php
 
-class XXX_GoogleMapsAPIHelpers
+abstract class XXX_GoogleMapsAPIHelpers
 {
+	// Free
+	public static $key = '';
+	
+	// Business
+	public static $client_ID = '';
+	public static $cryptoKey = '';
+	
+	public static $encryptedConnection = false;
+	
 	public static function doGETRequest ($uri = '', $parseJSONToArray = true)
 	{
 		$result = false;
@@ -47,27 +56,37 @@ class XXX_GoogleMapsAPIHelpers
 	  return base64_decode(str_replace(array('-', '_'), array('+', '/'), $value));
 	}
 	
+	public static function addAuthenticationToPath ($path = '', $disableBusiness = false)
+	{
+		if (!$disableBusiness && self::$client_ID != '')
+		{
+			$path .= '&client=' . self::$client_ID;
+			$path = XXX_GoogleMapsAPIHelpers::addSignatureToPath($path, self::$cryptoKey);
+		}
+		else if (self::$key != '')
+		{
+			$path .= '&key=' . urlencode(self::$key);
+		}
+		
+		return $path;
+	}
+	
 	// Sign a URL with a given crypto key
 	// Note that this URL must be properly URL-encoded
-	public static function addSignatureToURI ($uriToSign, $privateKey)
+	public static function addSignatureToPath ($path, $privateKey)
 	{
-	  // parse the url
-	  $url = parse_url($uriToSign);
-	
-	  $urlPartToSign = $url['path'] . '?' . $url['query'];
-	
 	  // Decode the private key into its binary format
 	  $decodedKey = self::decodeBase64URISafe($privateKey);
 	
 	  // Create a signature using the private key and the URL-encoded string using HMAC SHA1. This signature will be binary.
-	  $signature = hash_hmac('sha1', $urlPartToSign, $decodedKey, true);
+	  $signature = hash_hmac('sha1', $path, $decodedKey, true);
 	
 	  $encodedSignature = self::encodeBase64URISafe($signature);
 	
-	  return $uriToSign . '&signature=' . $encodedSignature;
+	  return $path . '&signature=' . $encodedSignature;
 	}
 	
-	// XXX_GoogleMapsAPIHelpers::addSignatureToURI("http://maps.google.com/maps/api/geocode/json?address=New+York&sensor=false&client=clientID", 'vNIXE0xscrmjlyV-12Nj_BvUPaw=');
+	// XXX_GoogleMapsAPIHelpers::addSignatureToPath('/maps/api/geocode/json?address=New+York&sensor=false&client=clientID', 'vNIXE0xscrmjlyV-12Nj_BvUPaw=');
 
 }
 

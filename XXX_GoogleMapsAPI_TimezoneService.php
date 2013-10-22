@@ -159,24 +159,33 @@ class XXX_GoogleMapsAPI_TimezoneService
 		}
 		
 		// http://maps.googleapis.com/maps/api/timezone/json?location=39.6034810,-119.6822510&timestamp=1331161200&sensor=true_or_false
-		$uri = 'https://maps.googleapis.com/maps/api/timezone/json';
-		$uri .= '?';
-		$uri .= 'location=' . urlencode($latitude . ',' . $longitude);
-		$uri .= '&timestamp=' . urlencode($timestamp);
-		$uri .= '&sensor=false';
-		if (self::$key != '')
+				
+		$protocol = 'http://';
+		
+		if (XXX_GoogleMapsAPIHelpers::$encryptedConnection)
 		{
-			//$uri .= '&key=' . self::$key;
+			$protocol = 'https://';
 		}
+				
+		$domain = 'maps.googleapis.com';
+		
+		$path = '/maps/api/timezone/json';
+		$path .= '?';
+		$path .= 'location=' . urlencode($latitude . ',' . $longitude);
+		$path .= '&timestamp=' . urlencode($timestamp);
+		$path .= '&sensor=false';
+		
 		if ($languageCode != '')
 		{
-			$uri .= '&language=' . $languageCode;
+			$path .= '&language=' . $languageCode;
 		}
 		
+		$path = XXX_GoogleMapsAPIHelpers::addAuthenticationToPath($path);
+				
+		$uri = $protocol . $domain . $path;
+		
 		$response = XXX_GoogleMapsAPIHelpers::doGETRequest($uri);
-				
-		//XXX_Type::peakAtVariable($response);		
-				
+			
 		if ($response != false && $response['status'] == 'OK')
 		{
 			$extraInformation = array

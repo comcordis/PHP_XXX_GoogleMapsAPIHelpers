@@ -2,32 +2,46 @@
 
 class XXX_GoogleMapsAPI_PlacesService
 {
-	public static $key = '';
-	
 	public static function lookupPlace ($rawPlaceString = '', $languageCode = 'en', $locationBias = '')
 	{
 		$result = false;
 		
+		// Maps API for Business customers should not include a client or signature parameter with their requests.
+		
 		// https://maps.googleapis.com/maps/api/place/autocomplete/json?input=Vict&types=geocode&language=fr&sensor=true&key=AddYourOwnKeyHere
-		$uri = 'https://maps.googleapis.com/maps/api/place/textsearch/json';
-		$uri .= '?';
-		$uri .= 'input=' . urlencode($rawPlaceString);
-		$uri .= '&sensor=false';
-		if (self::$key != '')
+		
+		$protocol = 'http://';
+		
+		if (XXX_GoogleMapsAPIHelpers::$encryptedConnection)
 		{
-			$uri .= '&key=' . self::$key;
+			$protocol = 'https://';
 		}
-		//$uri .= '&types=geocode';
+		
+		$domain = 'maps.googleapis.com';
+		$path = '/maps/api/place/textsearch/json';
+		$path .= '?';
+		$path .= 'query=' . urlencode($rawPlaceString);
+		$path .= '&sensor=false';
+		
+		//$path .= '&types=geocode';
 		if ($languageCode != '')
 		{
-			$uri .= '&language=' . $languageCode;
+			$path .= '&language=' . $languageCode;
 		}
 		if ($locationBias != '')
 		{
-			$uri .= '&region=' . $locationBias;
+			$path .= '&region=' . urlencode($locationBias);
 		}
 		
+		$path = XXX_GoogleMapsAPIHelpers::addAuthenticationToPath($path, true);
+				
+		$uri = $protocol . $domain . $path;
+		
+		echo $uri;
+		
 		$response = XXX_GoogleMapsAPIHelpers::doGETRequest($uri);
+		
+		XXX_Type::peakAtVariable($response);
 		
 		if ($response != false && $response['status'] == 'OK')
 		{

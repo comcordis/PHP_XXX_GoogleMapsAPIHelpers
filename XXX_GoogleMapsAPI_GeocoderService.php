@@ -2,31 +2,43 @@
 
 class XXX_GoogleMapsAPI_GeocoderService
 {
-	public static $key = '';
-	
 	public static function lookupAddress ($rawAddressString = '', $languageCode = 'en', $locationBias = '')
 	{
 		$result = false;
 		
 		// http://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&sensor=true_or_false
-		$uri = 'http://maps.googleapis.com/maps/api/geocode/json';
-		$uri .= '?';
-		$uri .= 'address=' . urlencode($rawAddressString);
-		$uri .= '&sensor=false';
-		if (self::$key != '')
+		
+		$protocol = 'http://';
+		
+		if (XXX_GoogleMapsAPIHelpers::$encryptedConnection)
 		{
-			//$uri .= '&key=' . self::$key;
+			$protocol = 'https://';
 		}
+		
+		$domain = 'maps.googleapis.com';
+		$path = '/maps/api/geocode/json';
+		$path .= '?';
+		$path .= 'address=' . urlencode($rawAddressString);
+		$path .= '&sensor=false';
+		
 		if ($languageCode != '')
 		{
-			$uri .= '&language=' . $languageCode;
+			$path .= '&language=' . $languageCode;
 		}
 		if ($locationBias != '')
 		{
-			$uri .= '&region=' . $locationBias;
+			$path .= '&region=' . $locationBias;
 		}
 		
+		$path = XXX_GoogleMapsAPIHelpers::addAuthenticationToPath($path);
+		
+		$uri = $protocol . $domain . $path;
+		
+		echo $uri;
+		
 		$response = XXX_GoogleMapsAPIHelpers::doGETRequest($uri);
+		
+		XXX_Type::peakAtVariable($response);
 		
 		if ($response != false && $response['status'] == 'OK')
 		{
@@ -49,22 +61,31 @@ class XXX_GoogleMapsAPI_GeocoderService
 		$result = false;
 		
 		// http://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&sensor=true_or_false
-		$uri = 'http://maps.googleapis.com/maps/api/geocode/json';
-		$uri .= '?';
-		$uri .= 'latlng=' . urlencode($latitude . ',' . $longitude);
-		$uri .= '&sensor=false';
-		if (self::$key != '')
+		
+		$protocol = 'http://';
+		
+		if (XXX_GoogleMapsAPIHelpers::$encryptedConnection)
 		{
-			//$uri .= '&key=' . self::$key;
+			$protocol = 'https://';
 		}
+				
+		$domain = 'maps.googleapis.com';
+		$path = '/maps/api/geocode/json';
+		$path .= '?';
+		$path .= 'latlng=' . urlencode($latitude . ',' . $longitude);
+		$path .= '&sensor=false';
+		
 		if ($languageCode != '')
 		{
-			$uri .= '&language=' . $languageCode;
+			$path .= '&language=' . $languageCode;
 		}
 		if ($locationBias != '')
 		{
-			$uri .= '&region=' . $locationBias;
+			$path .= '&region=' . $locationBias;
 		}
+		$path = XXX_GoogleMapsAPIHelpers::addAuthenticationToPath($path);
+		
+		$uri = $protocol . $domain . $path;
 		
 		$response = XXX_GoogleMapsAPIHelpers::doGETRequest($uri);
 		
