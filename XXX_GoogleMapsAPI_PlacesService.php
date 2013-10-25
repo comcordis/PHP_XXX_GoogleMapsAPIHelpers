@@ -37,11 +37,7 @@ class XXX_GoogleMapsAPI_PlacesService
 				
 		$uri = $protocol . $domain . $path;
 		
-		echo $uri;
-		
 		$response = XXX_GoogleMapsAPIHelpers::doGETRequest($uri);
-		
-		XXX_Type::peakAtVariable($response);
 		
 		if ($response != false && $response['status'] == 'OK')
 		{

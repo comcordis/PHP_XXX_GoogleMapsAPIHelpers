@@ -34,11 +34,7 @@ class XXX_GoogleMapsAPI_GeocoderService
 		
 		$uri = $protocol . $domain . $path;
 		
-		echo $uri;
-		
 		$response = XXX_GoogleMapsAPIHelpers::doGETRequest($uri);
-		
-		XXX_Type::peakAtVariable($response);
 		
 		if ($response != false && $response['status'] == 'OK')
 		{
