@@ -1,5 +1,12 @@
 <?php
 
+/*
+
+SOLVED. In Google API Console, I had declared allowed server IPs. I was assuming that if I declared an IP, I was just ensuring that requests would be allowed only from that IP. 
+In order for this to work, you must also declare the allowed per-user limits for each IP, or else it just doesn't allow any requests. I removed all the allowed IPs, waited for 3-4 minutes, and the request was allowed.
+
+*/
+
 class XXX_GoogleMapsAPI_PlacesService
 {
 	public static function lookupPlace ($rawPlaceString = '', $languageCode = 'en', $locationBias = '')
@@ -11,6 +18,7 @@ class XXX_GoogleMapsAPI_PlacesService
 		// https://maps.googleapis.com/maps/api/place/autocomplete/json?input=Vict&types=geocode&language=fr&sensor=true&key=AddYourOwnKeyHere
 		
 		$protocol = 'http://';
+		$protocol = 'https://'; // Should be https
 		
 		if (XXX_GoogleMapsAPIHelpers::$encryptedConnection)
 		{
@@ -38,7 +46,7 @@ class XXX_GoogleMapsAPI_PlacesService
 		$uri = $protocol . $domain . $path;
 		
 		$response = XXX_GoogleMapsAPIHelpers::doGETRequest($uri);
-		
+				
 		if ($response != false && $response['status'] == 'OK')
 		{
 			$extraInformation = array

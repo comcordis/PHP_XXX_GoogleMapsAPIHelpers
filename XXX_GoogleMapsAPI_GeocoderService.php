@@ -36,6 +36,10 @@ class XXX_GoogleMapsAPI_GeocoderService
 		
 		$response = XXX_GoogleMapsAPIHelpers::doGETRequest($uri);
 		
+		
+			//XXX_Type::peakAtVariable($uri);
+			//XXX_Type::peakAtVariable($response);
+		
 		if ($response != false && $response['status'] == 'OK')
 		{
 			$extraInformation = array
