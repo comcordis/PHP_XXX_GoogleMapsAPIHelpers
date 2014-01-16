@@ -68,7 +68,7 @@ class XXX_GoogleMapsAPI_GeocoderService
 		{
 			$protocol = 'https://';
 		}
-				
+		
 		$domain = 'maps.googleapis.com';
 		$path = '/maps/api/geocode/json';
 		$path .= '?';
@@ -88,6 +88,8 @@ class XXX_GoogleMapsAPI_GeocoderService
 		$uri = $protocol . $domain . $path;
 		
 		$response = XXX_GoogleMapsAPIHelpers::doGETRequest($uri);
+		
+		//XXX_Type::peakAtVariable($response);
 		
 		if ($response != false && $response['status'] == 'OK')
 		{
