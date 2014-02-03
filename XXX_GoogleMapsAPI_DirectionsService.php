@@ -2,17 +2,35 @@
 
 class XXX_GoogleMapsAPI_DirectionsService
 {
+	// Free
+	public static $serverKey = '';
+	
+	// Business
+	public static $client_ID = '';
+	public static $cryptoKey = '';
+	
+	public static $httpsOnly = false;
+	
+	public static $authenticationType = 'free';
+	
 	public static function getRideInformationForAddressStrings ($fromRawAddressString = '', $toRawAddressString = '', $languageCode = 'en', $locationBias = '')
 	{
 		$result = false;
 		
 		// http://maps.googleapis.com/maps/api/directions/json?origin=Boston,MA&destination=Concord,MA&waypoints=A|B&sensor=false
 		
-		$protocol = 'http://';
-		
-		if (XXX_GoogleMapsAPIHelpers::$encryptedConnection)
+		if (self::$httpsOnly)
 		{
 			$protocol = 'https://';
+		}
+		else
+		{		
+			$protocol = 'http://';
+		
+			if (class_exists('XXX_HTTPServer') && XXX_HTTPServer::$encryptedConnection)
+			{
+				$protocol = 'https://';
+			}
 		}
 		
 		$domain = 'maps.googleapis.com';
@@ -34,7 +52,15 @@ class XXX_GoogleMapsAPI_DirectionsService
 			$path .= '&region=' . $locationBias;
 		}
 		
-		$path = XXX_GoogleMapsAPIHelpers::addAuthenticationToPath($path);
+		// Free
+		$authenticationType = 'none';
+		
+		if (self::$authenticationType == 'business')
+		{
+			$authenticationType = 'client_IDAndSignature';
+		}
+		
+		$path = XXX_GoogleMapsAPIHelpers::addAuthenticationToPath($path, $authenticationType, self::$serverKey, self::$client_ID, self::$cryptoKey);
 				
 		$uri = $protocol . $domain . $path;
 		
@@ -62,11 +88,18 @@ class XXX_GoogleMapsAPI_DirectionsService
 		
 		// http://maps.googleapis.com/maps/api/directions/json?origin=41.43206,-81.38992&destination=41.43206,-81.38992&waypoints=A|B&sensor=false
 		
-		$protocol = 'http://';
-		
-		if (XXX_GoogleMapsAPIHelpers::$encryptedConnection)
+		if (self::$httpsOnly)
 		{
 			$protocol = 'https://';
+		}
+		else
+		{		
+			$protocol = 'http://';
+			
+			if (class_exists('XXX_HTTPServer') && XXX_HTTPServer::$encryptedConnection)
+			{
+				$protocol = 'https://';
+			}
 		}
 				
 		$domain = 'maps.googleapis.com';
@@ -88,7 +121,15 @@ class XXX_GoogleMapsAPI_DirectionsService
 			$path .= '&region=' . $locationBias;
 		}
 		
-		$path = XXX_GoogleMapsAPIHelpers::addAuthenticationToPath($path);
+		// Free
+		$authenticationType = 'none';
+		
+		if (self::$authenticationType == 'business')
+		{
+			$authenticationType = 'client_IDAndSignature';
+		}
+		
+		$path = XXX_GoogleMapsAPIHelpers::addAuthenticationToPath($path, $authenticationType, self::$serverKey, self::$client_ID, self::$cryptoKey);
 				
 		$uri = $protocol . $domain . $path;
 				

@@ -2,7 +2,17 @@
 
 class XXX_GoogleMapsAPI_TimezoneService
 {
-	public static $key = '';
+	// Free
+	public static $serverKey = '';
+	
+	// Business
+	public static $client_ID = '';
+	public static $cryptoKey = '';
+	
+	// Important: You must submit requests via https, not http.
+	public static $httpsOnly = true;
+	
+	public static $authenticationType = 'free';
 	
 	public static function getTimezoneInformationForGeoPositionAndLocalTimestamp ($latitude = 0, $longitude = 0, $localTimestamp = false, $languageCode = 'en')
 	{
@@ -158,13 +168,20 @@ class XXX_GoogleMapsAPI_TimezoneService
 			$timestamp = XXX_TimestampHelpers::getCurrentTimestamp();
 		}
 		
-		// http://maps.googleapis.com/maps/api/timezone/json?location=39.6034810,-119.6822510&timestamp=1331161200&sensor=true_or_false
-				
-		$protocol = 'http://';
+		// https://maps.googleapis.com/maps/api/timezone/json?location=39.6034810,-119.6822510&timestamp=1331161200&sensor=true_or_false
 		
-		if (XXX_GoogleMapsAPIHelpers::$encryptedConnection)
+		if (self::$httpsOnly)
 		{
 			$protocol = 'https://';
+		}
+		else
+		{		
+			$protocol = 'http://';
+			
+			if (class_exists('XXX_HTTPServer') && XXX_HTTPServer::$encryptedConnection)
+			{
+				$protocol = 'https://';
+			}
 		}
 				
 		$domain = 'maps.googleapis.com';
@@ -180,7 +197,15 @@ class XXX_GoogleMapsAPI_TimezoneService
 			$path .= '&language=' . $languageCode;
 		}
 		
-		$path = XXX_GoogleMapsAPIHelpers::addAuthenticationToPath($path);
+		// Free
+		$authenticationType = 'none';
+		
+		if (self::$authenticationType == 'business')
+		{
+			$authenticationType = 'client_IDAndSignature';
+		}
+		
+		$path = XXX_GoogleMapsAPIHelpers::addAuthenticationToPath($path, $authenticationType, self::$serverKey, self::$client_ID, self::$cryptoKey);
 				
 		$uri = $protocol . $domain . $path;
 		

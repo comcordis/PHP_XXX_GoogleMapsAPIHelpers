@@ -2,17 +2,35 @@
 
 class XXX_GoogleMapsAPI_GeocoderService
 {
+	// Free
+	public static $serverKey = '';
+	
+	// Business
+	public static $client_ID = '';
+	public static $cryptoKey = '';
+	
+	public static $httpsOnly = false;
+	
+	public static $authenticationType = 'free';
+	
 	public static function lookupAddress ($rawAddressString = '', $languageCode = 'en', $locationBias = '')
 	{
 		$result = false;
 		
 		// http://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&sensor=true_or_false
 		
-		$protocol = 'http://';
-		
-		if (XXX_GoogleMapsAPIHelpers::$encryptedConnection)
+		if (self::$httpsOnly)
 		{
 			$protocol = 'https://';
+		}
+		else
+		{	
+			$protocol = 'http://';
+			
+			if (class_exists('XXX_HTTPServer') && XXX_HTTPServer::$encryptedConnection)
+			{
+				$protocol = 'https://';
+			}
 		}
 		
 		$domain = 'maps.googleapis.com';
@@ -30,7 +48,15 @@ class XXX_GoogleMapsAPI_GeocoderService
 			$path .= '&region=' . $locationBias;
 		}
 		
-		$path = XXX_GoogleMapsAPIHelpers::addAuthenticationToPath($path);
+		// Free
+		$authenticationType = 'none';
+		
+		if (self::$authenticationType == 'business')
+		{
+			$authenticationType = 'client_IDAndSignature';
+		}
+		
+		$path = XXX_GoogleMapsAPIHelpers::addAuthenticationToPath($path, $authenticationType, self::$serverKey, self::$client_ID, self::$cryptoKey);
 		
 		$uri = $protocol . $domain . $path;
 		
@@ -62,11 +88,18 @@ class XXX_GoogleMapsAPI_GeocoderService
 		
 		// http://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&sensor=true_or_false
 		
-		$protocol = 'http://';
-		
-		if (XXX_GoogleMapsAPIHelpers::$encryptedConnection)
+		if (self::$httpsOnly)
 		{
 			$protocol = 'https://';
+		}
+		else
+		{	
+			$protocol = 'http://';
+			
+			if (class_exists('XXX_HTTPServer') && XXX_HTTPServer::$encryptedConnection)
+			{
+				$protocol = 'https://';
+			}
 		}
 		
 		$domain = 'maps.googleapis.com';
@@ -83,7 +116,17 @@ class XXX_GoogleMapsAPI_GeocoderService
 		{
 			$path .= '&region=' . $locationBias;
 		}
-		$path = XXX_GoogleMapsAPIHelpers::addAuthenticationToPath($path);
+		
+		
+		// Free
+		$authenticationType = 'none';
+		
+		if (self::$authenticationType == 'business')
+		{
+			$authenticationType = 'client_IDAndSignature';
+		}
+		
+		$path = XXX_GoogleMapsAPIHelpers::addAuthenticationToPath($path, $authenticationType, self::$serverKey, self::$client_ID, self::$cryptoKey);
 		
 		$uri = $protocol . $domain . $path;
 		

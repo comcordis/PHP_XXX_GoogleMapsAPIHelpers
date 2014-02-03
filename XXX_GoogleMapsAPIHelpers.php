@@ -1,16 +1,13 @@
 <?php
 
+/*
+
+https://developers.google.com/maps/faq#usagelimits
+
+*/
+
 abstract class XXX_GoogleMapsAPIHelpers
 {
-	// Free
-	public static $key = '';
-	
-	// Business
-	public static $client_ID = '';
-	public static $cryptoKey = '';
-	
-	public static $encryptedConnection = false;
-	
 	public static function doGETRequest ($uri = '', $parseJSONToArray = true)
 	{
 		$result = false;
@@ -56,16 +53,35 @@ abstract class XXX_GoogleMapsAPIHelpers
 	  return base64_decode(str_replace(array('-', '_'), array('+', '/'), $value));
 	}
 	
-	public static function addAuthenticationToPath ($path = '', $disableBusiness = false)
+	public static function addAuthenticationToPath ($path = '', $authenticationType = 'none', $key = '', $client_ID = '', $cryptoKey = '')
 	{
-		if (!$disableBusiness && self::$client_ID != '')
+		// Never both client and key
+		switch ($authenticationType)
 		{
-			$path .= '&client=' . self::$client_ID;
-			$path = XXX_GoogleMapsAPIHelpers::addSignatureToPath($path, self::$cryptoKey);
-		}
-		else if (self::$key != '')
-		{
-			$path .= '&key=' . urlencode(self::$key);
+			case 'client_ID':
+				if ($client_ID != '')
+				{
+					$path .= '&client=' . $client_ID;
+				}
+				break;
+			case 'client_IDAndSignature':
+				if ($client_ID != '')
+				{
+					$path .= '&client=' . $client_ID;
+					if ($cryptoKey)
+					{
+						$path = XXX_GoogleMapsAPIHelpers::addSignatureToPath($path, $cryptoKey);
+					}
+				}
+				break;
+			case 'key':
+			case 'browserKey':
+			case 'serverKey':
+				$path .= '&key=' . urlencode($key);
+				break;
+			case 'none':
+			default:
+				break;
 		}
 		
 		return $path;
@@ -85,9 +101,8 @@ abstract class XXX_GoogleMapsAPIHelpers
 	
 	  return $path . '&signature=' . $encodedSignature;
 	}
-	
-	// XXX_GoogleMapsAPIHelpers::addSignatureToPath('/maps/api/geocode/json?address=New+York&sensor=false&client=clientID', 'vNIXE0xscrmjlyV-12Nj_BvUPaw=');
-
 }
+
+// XXX_GoogleMapsAPIHelpers::addSignatureToPath('/maps/api/geocode/json?address=New+York&sensor=false&client=clientID', 'vNIXE0xscrmjlyV-12Nj_BvUPaw=');
 
 ?>

@@ -18,17 +18,35 @@ It expires in 13 days (2014-01-22)
 
 class XXX_GoogleMapsAPI_DistanceMatrixService
 {
+	// Free
+	public static $serverKey = '';
+	
+	// Business
+	public static $client_ID = '';
+	public static $cryptoKey = '';
+	
+	public static $httpsOnly = false;
+	
+	public static $authenticationType = 'free';
+	
 	public static function getRideInformationForAddressStrings ($fromRawAddressString = '', $toRawAddressString = '', $languageCode = 'en', $locationBias = '')
 	{
 		$result = false;
 		
 		// http://maps.googleapis.com/maps/api/distancematrix/json?origins=Vancouver+BC|Seattle&destinations=San+Francisco|Victoria+BC&mode=bicycling&language=fr-FR&sensor=false
 		
-		$protocol = 'http://';
-		
-		if (XXX_GoogleMapsAPIHelpers::$encryptedConnection)
+		if (self::$httpsOnly)
 		{
 			$protocol = 'https://';
+		}
+		else
+		{		
+			$protocol = 'http://';
+		
+			if (class_exists('XXX_HTTPServer') && XXX_HTTPServer::$encryptedConnection)
+			{
+				$protocol = 'https://';
+			}
 		}
 		
 		$domain = 'maps.googleapis.com';
@@ -50,7 +68,15 @@ class XXX_GoogleMapsAPI_DistanceMatrixService
 			$path .= '&region=' . $locationBias;
 		}
 		
-		$path = XXX_GoogleMapsAPIHelpers::addAuthenticationToPath($path);
+		// Free
+		$authenticationType = 'none';
+		
+		if (self::$authenticationType == 'business')
+		{
+			$authenticationType = 'client_IDAndSignature';
+		}
+		
+		$path = XXX_GoogleMapsAPIHelpers::addAuthenticationToPath($path, $authenticationType, self::$serverKey, self::$client_ID, self::$cryptoKey);
 				
 		$uri = $protocol . $domain . $path;
 		
@@ -79,11 +105,18 @@ class XXX_GoogleMapsAPI_DistanceMatrixService
 		
 		// http://maps.googleapis.com/maps/api/distancematrix/json?origins=41.43206,-81.38992&destinations=41.43206,-81.38992&mode=bicycling&language=fr-FR&sensor=false
 		
-		$protocol = 'http://';
-		
-		if (XXX_GoogleMapsAPIHelpers::$encryptedConnection)
+		if (self::$httpsOnly)
 		{
 			$protocol = 'https://';
+		}
+		else
+		{		
+			$protocol = 'http://';
+		
+			if (class_exists('XXX_HTTPServer') && XXX_HTTPServer::$encryptedConnection)
+			{
+				$protocol = 'https://';
+			}
 		}
 				
 		$domain = 'maps.googleapis.com';
@@ -156,7 +189,15 @@ class XXX_GoogleMapsAPI_DistanceMatrixService
 			$path .= '&region=' . $locationBias;
 		}
 		
-		$path = XXX_GoogleMapsAPIHelpers::addAuthenticationToPath($path);
+		// Free
+		$authenticationType = 'none';
+		
+		if (self::$authenticationType == 'business')
+		{
+			$authenticationType = 'client_IDAndSignature';
+		}
+		
+		$path = XXX_GoogleMapsAPIHelpers::addAuthenticationToPath($path, $authenticationType, self::$serverKey, self::$client_ID, self::$cryptoKey);
 				
 		$uri = $protocol . $domain . $path;
 		

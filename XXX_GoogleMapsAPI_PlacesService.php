@@ -9,20 +9,36 @@ In order for this to work, you must also declare the allowed per-user limits for
 
 class XXX_GoogleMapsAPI_PlacesService
 {
+	// Free
+	public static $serverKey = '';
+	
+	// Business
+	public static $client_ID = '';
+	public static $cryptoKey = '';
+	
+	// Important: You must submit requests via https, not http.
+	public static $httpsOnly = true;
+	
+	public static $authenticationType = 'free';
+	
 	public static function lookupPlace ($rawPlaceString = '', $languageCode = 'en', $locationBias = '')
 	{
 		$result = false;
 		
-		// Maps API for Business customers should not include a client or signature parameter with their requests.
-		
 		// https://maps.googleapis.com/maps/api/place/autocomplete/json?input=Vict&types=geocode&language=fr&sensor=true&key=AddYourOwnKeyHere
 		
-		$protocol = 'http://';
-		$protocol = 'https://'; // Should be https
-		
-		if (XXX_GoogleMapsAPIHelpers::$encryptedConnection)
+		if (self::$httpsOnly)
 		{
 			$protocol = 'https://';
+		}
+		else
+		{		
+			$protocol = 'http://';
+			
+			if (class_exists('XXX_HTTPServer') && XXX_HTTPServer::$encryptedConnection)
+			{
+				$protocol = 'https://';
+			}
 		}
 		
 		$domain = 'maps.googleapis.com';
@@ -41,7 +57,16 @@ class XXX_GoogleMapsAPI_PlacesService
 			$path .= '&region=' . urlencode($locationBias);
 		}
 		
-		$path = XXX_GoogleMapsAPIHelpers::addAuthenticationToPath($path, true);
+		// Free
+		$authenticationType = 'none';
+		
+		if (self::$authenticationType == 'business')
+		{
+			// Maps API for Business customers should not include a client or signature parameter with their requests.
+			$authenticationType = 'client_IDAndSignature';
+		}
+		
+		$path = XXX_GoogleMapsAPIHelpers::addAuthenticationToPath($path, $authenticationType, self::$serverKey, self::$client_ID, self::$cryptoKey);
 				
 		$uri = $protocol . $domain . $path;
 		
