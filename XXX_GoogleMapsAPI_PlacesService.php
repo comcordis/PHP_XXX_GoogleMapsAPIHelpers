@@ -21,9 +21,13 @@ class XXX_GoogleMapsAPI_PlacesService
 	
 	public static $authenticationType = 'free';
 	
+	public static $error = false;
+	
 	public static function lookupPlace ($rawPlaceString = '', $languageCode = 'en', $locationBias = '')
 	{
 		$result = false;
+		
+		self::$error = false;
 		
 		// https://maps.googleapis.com/maps/api/place/autocomplete/json?input=Vict&types=geocode&language=fr&sensor=true&key=AddYourOwnKeyHere
 		
@@ -63,7 +67,7 @@ class XXX_GoogleMapsAPI_PlacesService
 		if (self::$authenticationType == 'business')
 		{
 			// Maps API for Business customers should not include a client or signature parameter with their requests.
-			$authenticationType = 'client_IDAndSignature';
+			$authenticationType = 'serverKey';
 		}
 		
 		$path = XXX_GoogleMapsAPIHelpers::addAuthenticationToPath($path, $authenticationType, self::$serverKey, self::$client_ID, self::$cryptoKey);
@@ -86,10 +90,45 @@ class XXX_GoogleMapsAPI_PlacesService
 			
 			$result = self::parsePlacesResponse($response, $extraInformation);
 		}
+		else
+		{
+			self::$error = self::determineError($response['status']);
+		}
 		
 		return $result;
 	}
 	
+	public static function determineError ($status = '')
+	{
+		$result = false;
+		
+		switch ($status)
+		{
+			case 'INVALID_REQUEST':
+				// generally indicates that a required query parameter (location or radius) is missing.
+				$result = 'invalidRequest';
+				break;
+			case 'OVER_QUERY_LIMIT':
+				// indicates that you are over your quota.
+				$result = 'overQueryLimit';
+				break;
+			case 'REQUEST_DENIED':
+				// indicates that your request was denied, generally because of lack of a sensor parameter.
+				$result = 'requestDenied';
+				break;
+			case 'UNKNOWN_ERROR':
+				// indicates an unknown error.
+				$result = 'unknownError';
+				break;
+			case 'ZERO_RESULTS':
+				// indicates that the search was successful but returned no results. This may occur if the search was passed a latlng in a remote location.
+				$result = 'noResults';
+				break;
+		}
+		
+		return $result;
+	}
+		
 	public static function parsePlacesResponse ($placesResponse = array(), $extraInformation = array())
 	{
 		$results = false;

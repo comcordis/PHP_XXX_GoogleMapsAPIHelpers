@@ -13,9 +13,13 @@ class XXX_GoogleMapsAPI_DirectionsService
 	
 	public static $authenticationType = 'free';
 	
+	public static $error = false;
+	
 	public static function getRideInformationForAddressStrings ($fromRawAddressString = '', $toRawAddressString = '', $languageCode = 'en', $locationBias = '')
 	{
 		$result = false;
+		
+		self::$error = false;
 		
 		// http://maps.googleapis.com/maps/api/directions/json?origin=Boston,MA&destination=Concord,MA&waypoints=A|B&sensor=false
 		
@@ -78,6 +82,10 @@ class XXX_GoogleMapsAPI_DirectionsService
 			
 			$result = self::parseDirectionsResponse($response, $extraInformation);
 		}
+		else
+		{
+			self::$error = self::determineError($response['status']);
+		}
 		
 		return $result;
 	}
@@ -85,6 +93,8 @@ class XXX_GoogleMapsAPI_DirectionsService
 	public static function getRideInformationForGeoPositions ($fromLatitude = 0, $fromLongitude = 0, $toLatitude = 0, $toLongitude = 0, $languageCode = 'en', $locationBias = '')
 	{
 		$result = false;
+		
+		self::$error = false;
 		
 		// http://maps.googleapis.com/maps/api/directions/json?origin=41.43206,-81.38992&destination=41.43206,-81.38992&waypoints=A|B&sensor=false
 		
@@ -148,6 +158,49 @@ class XXX_GoogleMapsAPI_DirectionsService
 			);
 			
 			$result = self::parseDirectionsResponse($response, $extraInformation);
+		}
+		else
+		{
+			self::$error = self::determineError($response['status']);
+		}
+		
+		return $result;
+	}
+		
+	public static function determineError ($status = '')
+	{
+		$result = false;
+		
+		switch ($status)
+		{
+			case 'INVALID_REQUEST':
+				// indicates that the provided request was invalid. Common causes of this status include an invalid parameter or parameter value.
+				$result = 'invalidRequest';
+				break;
+			case 'NOT_FOUND':
+				// indicates at least one of the locations specified in the requests's origin, destination, or waypoints could not be geocoded.
+				$result = 'notFound';
+				break;
+			case 'MAX_WAYPOINTS_EXCEEDED':
+				// indicates that too many waypointss were provided in the request The maximum allowed waypoints is 8, plus the origin, and destination. ( Google Maps API for Business customers may contain requests with up to 23 waypoints.)
+				$result = 'maximumWaypointsExceeded';
+				break;
+			case 'OVER_QUERY_LIMIT':
+				// indicates the service has received too many requests from your application within the allowed time period.
+				$result = 'overQueryLimit';
+				break;
+			case 'REQUEST_DENIED':
+				// indicates that the service denied use of the directions service by your application.
+				$result = 'requestDenied';
+				break;
+			case 'UNKNOWN_ERROR':
+				// indicates a directions request could not be processed due to a server error. The request may succeed if you try again.
+				$result = 'unknownError';
+				break;
+			case 'ZERO_RESULTS':
+				// indicates no route could be found between the origin and destination.
+				$result = 'noResults';
+				break;
 		}
 		
 		return $result;

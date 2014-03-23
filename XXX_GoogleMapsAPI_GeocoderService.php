@@ -13,9 +13,13 @@ class XXX_GoogleMapsAPI_GeocoderService
 	
 	public static $authenticationType = 'free';
 	
+	public static $error = false;
+	
 	public static function lookupAddress ($rawAddressString = '', $languageCode = 'en', $locationBias = '')
 	{
 		$result = false;
+		
+		self::$error = false;
 		
 		// http://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&sensor=true_or_false
 		
@@ -78,6 +82,10 @@ class XXX_GoogleMapsAPI_GeocoderService
 			
 			$result = self::parseGeocoderResponse($response, $extraInformation);
 		}
+		else
+		{
+			self::$error = self::determineError($response['status']);
+		}
 		
 		return $result;
 	}
@@ -85,6 +93,8 @@ class XXX_GoogleMapsAPI_GeocoderService
 	public static function lookupGeoPosition ($latitude = 0, $longitude = 0, $languageCode = 'en', $locationBias = '')
 	{
 		$result = false;
+		
+		self::$error = false;
 		
 		// http://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&sensor=true_or_false
 		
@@ -147,10 +157,45 @@ class XXX_GoogleMapsAPI_GeocoderService
 			
 			$result = self::parseGeocoderResponse($response, $extraInformation);
 		}
+		else
+		{
+			self::$error = self::determineError($response['status']);
+		}
 		
 		return $result;
 	}
-	
+		
+	public static function determineError ($status = '')
+	{
+		$result = false;
+		
+		switch ($status)
+		{
+			case 'INVALID_REQUEST':
+				// generally indicates that the query (address or latlng) is missing.
+				$result = 'invalidRequest';
+				break;
+			case 'OVER_QUERY_LIMIT':
+				// indicates that you are over your quota.
+				$result = 'overQueryLimit';
+				break;
+			case 'REQUEST_DENIED':
+				// indicates that your request was denied, generally because of lack of a sensor parameter.
+				$result = 'requestDenied';
+				break;
+			case 'UNKNOWN_ERROR':
+				// indicates that the request could not be processed due to a server error. The request may succeed if you try again.
+				$result = 'unknownError';
+				break;
+			case 'ZERO_RESULTS':
+				// indicates that the geocode was successful but returned no results. This may occur if the geocode was passed a non-existent address or a latlng in a remote location.
+				$result = 'noResults';
+				break;
+		}
+		
+		return $result;
+	}
+		
 	public static function parseGeocoderResponse ($response = array(), $extraInformation = array())
 	{
 		$results = false;

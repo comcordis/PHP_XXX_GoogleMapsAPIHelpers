@@ -14,6 +14,8 @@ class XXX_GoogleMapsAPI_TimezoneService
 	
 	public static $authenticationType = 'free';
 	
+	public static $error = false;
+	
 	public static function getTimezoneInformationForGeoPositionAndLocalTimestamp ($latitude = 0, $longitude = 0, $localTimestamp = false, $languageCode = 'en')
 	{
 		$result = array
@@ -163,6 +165,8 @@ class XXX_GoogleMapsAPI_TimezoneService
 	{
 		$result = false;
 		
+		self::$error = false;
+		
 		if ($timestamp === false)
 		{
 			$timestamp = XXX_TimestampHelpers::getCurrentTimestamp();
@@ -222,6 +226,41 @@ class XXX_GoogleMapsAPI_TimezoneService
 			);
 			
 			$result = self::parseTimezoneResponse($response, $extraInformation);
+		}
+		else
+		{
+			self::$error = self::determineError($response['status']);
+		}
+		
+		return $result;
+	}
+	
+	public static function determineError ($status = '')
+	{
+		$result = false;
+		
+		switch ($status)
+		{
+			case 'INVALID_REQUEST':
+				// indicates that the request was malformed.
+				$result = 'invalidRequest';
+				break;
+			case 'OVER_QUERY_LIMIT':
+				// indicates the requestor has exceeded quota.
+				$result = 'overQueryLimit';
+				break;
+			case 'REQUEST_DENIED':
+				// indicates that the the API did not complete the request. Confirm that the request was sent over http instead of https.
+				$result = 'requestDenied';
+				break;
+			case 'UNKNOWN_ERROR':
+				// indicates an unknown error.
+				$result = 'unknownError';
+				break;
+			case 'ZERO_RESULTS':
+				// indicates that no time zone data could be found for the specified position or time. Confirm that the request is for a location on land, and not over water.
+				$result = 'noResults';
+				break;
 		}
 		
 		return $result;

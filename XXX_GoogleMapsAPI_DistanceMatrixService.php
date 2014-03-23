@@ -29,9 +29,13 @@ class XXX_GoogleMapsAPI_DistanceMatrixService
 	
 	public static $authenticationType = 'free';
 	
+	public static $error = false;
+	
 	public static function getRideInformationForAddressStrings ($fromRawAddressString = '', $toRawAddressString = '', $languageCode = 'en', $locationBias = '')
 	{
 		$result = false;
+		
+		self::$error = false;
 		
 		// http://maps.googleapis.com/maps/api/distancematrix/json?origins=Vancouver+BC|Seattle&destinations=San+Francisco|Victoria+BC&mode=bicycling&language=fr-FR&sensor=false
 		
@@ -94,6 +98,10 @@ class XXX_GoogleMapsAPI_DistanceMatrixService
 			
 			$result = self::parseDistanceMatrixResponse($response, $extraInformation);
 		}
+		else
+		{
+			self::$error = self::determineError($response['status']);
+		}
 		
 		return $result;
 	}
@@ -102,6 +110,8 @@ class XXX_GoogleMapsAPI_DistanceMatrixService
 	public static function getRideInformationForGeoPositions ($fromLatitude = 0, $fromLongitude = 0, $toLatitude = 0, $toLongitude = 0, $languageCode = 'en', $locationBias = '')
 	{
 		$result = false;
+		
+		self::$error = false;
 		
 		// http://maps.googleapis.com/maps/api/distancematrix/json?origins=41.43206,-81.38992&destinations=41.43206,-81.38992&mode=bicycling&language=fr-FR&sensor=false
 		
@@ -238,7 +248,41 @@ class XXX_GoogleMapsAPI_DistanceMatrixService
 		}
 		else
 		{
-			trigger_error($response['status']);
+			self::$error = self::determineError($response['status']);
+		}
+		
+		return $result;
+	}
+		
+	public static function determineError ($status = '')
+	{
+		$result = false;
+		
+		switch ($status)
+		{
+			case 'INVALID_REQUEST':
+				// indicates that the provided request was invalid.
+				$result = 'invalidRequest';
+				break;
+			case 'MAX_ELEMENTS_EXCEEDED':
+				// indicates that the provided request was invalid.
+				$result = 'maximumElementsExceeded';
+				break;
+			case 'OVER_QUERY_LIMIT':
+				// indicates the service has received too many requests from your application within the allowed time period.
+				$result = 'overQueryLimit';
+				break;
+			case 'REQUEST_DENIED':
+				// indicates that the service denied use of the Distance Matrix service by your application.
+				$result = 'requestDenied';
+				break;
+			case 'UNKNOWN_ERROR':
+				// indicates a Distance Matrix request could not be processed due to a server error. The request may succeed if you try again.
+				$result = 'unknownError';
+				break;
+			case 'ZERO_RESULTS':
+				$result = 'noResults';
+				break;
 		}
 		
 		return $result;
