@@ -73,6 +73,8 @@ class XXX_GoogleMapsAPI_PlacesService
 		$path = XXX_GoogleMapsAPIHelpers::addAuthenticationToPath($path, $authenticationType, self::$serverKey, self::$client_ID, self::$cryptoKey);
 				
 		$uri = $protocol . $domain . $path;
+
+		echo $uri;
 		
 		$response = XXX_GoogleMapsAPIHelpers::doGETRequest($uri);
 		
