@@ -74,7 +74,7 @@ class XXX_GoogleMapsAPI_PlacesService
 				
 		$uri = $protocol . $domain . $path;
 
-		echo $uri;
+		//echo $uri;
 		
 		$response = XXX_GoogleMapsAPIHelpers::doGETRequest($uri);
 		
