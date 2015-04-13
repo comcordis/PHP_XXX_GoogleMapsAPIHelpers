@@ -1,0 +1,6 @@
+project:XXX_GoogleMapsAPIHelpers_PHP
+deployEnvironment:development
+checkout:master
+commitHash:f41b0dd93d85b1bf609a073a99424aa202b5ff7a
+timestamp:2015-04-13T09:44:25Z
+deployer:operations
